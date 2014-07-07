@@ -5,8 +5,10 @@ clean:
 	rm -f huff
 
 distclean: clean
-	rm -f output.dat
+	rm -f encoded.dat decoded.dat
 
 demo: all
-	rm -f output.dat
-	./huff -c huff output.dat
+	rm -f encoded.dat decoded.dat
+	./huff -c huff encoded.dat
+	./huff -d encoded.dat decoded.dat
+	diff -q huff decoded.dat
