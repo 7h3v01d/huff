@@ -11,4 +11,5 @@ demo: all
 	rm -f encoded.dat decoded.dat
 	./huff -c huff encoded.dat
 	./huff -d encoded.dat decoded.dat
-	diff -q huff decoded.dat
+	@diff -q huff decoded.dat || echo
+	@ls -lA huff decoded.dat encoded.dat
