@@ -1,5 +1,5 @@
 all:
-	gcc -Wall -Wextra -std=c99 -ohuff huff.c example.c
+	gcc -Wall -Wextra -ggdb -std=c99 -ohuff huff.c example.c
 
 clean:
 	rm -f huff

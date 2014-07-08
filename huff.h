@@ -7,8 +7,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-typedef struct {
-	char data[4096];
+typedef struct __attribute__( (__packed__) ) {
+	char data[6144];
 } huff_enc_t;
 
 
