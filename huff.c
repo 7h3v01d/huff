@@ -52,12 +52,53 @@ void huff_final_tree_enc( huff_enc_t *ctx )
 			ctx->root[i].code );
 	}//
 
+	/* TODO: this is bubblesort O(n^2) -> use quicksort O(n log n) instead. */
+	for( unsigned int i = 0; 255 > i; ++i ) {
+		for( unsigned int j = i+1; 256 > j; ++j ) {
+			if( ctx->root[i].freq < ctx->root[j].freq ) {
+				huff_node_t t = ctx->root[i];
+				ctx->root[i] = ctx->root[j];
+				ctx->root[j] = t;
+			}
+		}
+	}
+
+	for( int i = 0; 256 > i; ++i ) {
+		printf( "i: %d, symb: %d, freq: %u, code: %d\n",
+			i,
+			ctx->root[i].symb,
+			ctx->root[i].freq,
+			ctx->root[i].code );
+	}//
+
 	for( unsigned int i = 0; 256 > i; ++i ) {
 		if( 0 == ctx->root[i].freq ) {
 			break;
 		}
 		++ctx->size;
 	}
+
+	/*
+	// test
+	for( unsigned int i = 0, j = 255, k = ctx->root[0].freq; i < ctx->size; ++i ) {
+		if( k == ctx->root[i].freq ) {
+			k = ctx->root[i].freq;
+			ctx->root[i].freq = j;
+		}
+		else {
+			k = ctx->root[i].freq;
+			ctx->root[i].freq = --j;
+		}
+	}
+
+	for( int i = 0; 256 > i; ++i ) {
+		printf( "i: %d, symb: %d, freq: %u, code: %d\n",
+			i,
+			ctx->root[i].symb,
+			ctx->root[i].freq,
+			ctx->root[i].code );
+	}//
+	*/
 
 	printf( "size: %u\n", ctx->size );//
 }
