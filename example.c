@@ -133,7 +133,8 @@ void decode( FILE *in, FILE *out )
 
 void decode_writer( const void *data, unsigned int size, void *arg )
 {
-	(void)data;
-	(void)size;
-	(void)arg;
+	size_t siz = fwrite( data, 1, size, (FILE *)arg );
+	if( siz != size ) {
+		printf( "Unable to write output file: %m\n" );
+	}
 }
