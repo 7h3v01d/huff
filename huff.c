@@ -23,6 +23,7 @@ typedef struct __attribute__( (__packed__) ) {
 	huff_proc_t *proc;
 	void *arg;
 	huff_root_t root;
+	unsigned char start;
 	unsigned char size;
 	huff_node_t prob[256];
 } huff_enc_t;
@@ -34,6 +35,7 @@ void huff_init_enc( huff_enc_t *ctx, const huff_proc_t *proc, const void *arg )
 	ctx->arg = (void *)arg;
 	ctx->root.left = NULL;
 	ctx->root.right = NULL;
+	ctx->start = 0;
 	ctx->size = 0;
 
 	for( unsigned int i = 0; 256 > i; ++i ) {
@@ -54,7 +56,7 @@ void huff_update_tree_enc( huff_enc_t *ctx, const void *data, unsigned int size 
 #include <stdio.h>//
 void huff_final_tree_enc( huff_enc_t *ctx )
 {
-	ctx->proc( ctx->prob, sizeof(huff_node_t)*256, ctx->arg );
+	ctx->proc( ctx->prob, sizeof(huff_node_t)*256, ctx->arg );//
 
 	for( int i = 0; 256 > i; ++i ) {
 		printf( "i: %d, symb: %d, freq: %u, code: %d\n",
@@ -67,7 +69,7 @@ void huff_final_tree_enc( huff_enc_t *ctx )
 	/* TODO: this is bubblesort O(n^2) -> use quicksort O(n log n) instead. */
 	for( unsigned int i = 0; 255 > i; ++i ) {
 		for( unsigned int j = i+1; 256 > j; ++j ) {
-			if( ctx->prob[i].freq < ctx->prob[j].freq ) {
+			if( ctx->prob[i].freq > ctx->prob[j].freq ) {
 				huff_node_t t = ctx->prob[i];
 				ctx->prob[i] = ctx->prob[j];
 				ctx->prob[j] = t;
@@ -84,11 +86,13 @@ void huff_final_tree_enc( huff_enc_t *ctx )
 	}//
 
 	for( unsigned int i = 0; 256 > i; ++i ) {
-		if( 0 == ctx->prob[i].freq ) {
+		if( 0 != ctx->prob[i].freq ) {
 			break;
 		}
-		++ctx->size;
+		++ctx->start;
 	}
+
+	ctx->size = 256-ctx->start;
 
 	/*
 	// test
@@ -112,6 +116,7 @@ void huff_final_tree_enc( huff_enc_t *ctx )
 	}//
 	*/
 
+	printf( "start: %u\n", ctx->start );//
 	printf( "size: %u\n", ctx->size );//
 }
 
